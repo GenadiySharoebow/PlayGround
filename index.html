@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#120b17" />
+  <meta name="description" content="HORIZON LIBRE — низкополигональный фестиваль автоспорта в открытом мире Баха, Мексика. 10 машин, свободная езда и гонки." />
+  <title>HORIZON LIBRE — Baja Open World</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23120b17'/%3E%3Cpath d='M10 44 32 12l22 32-22-9z' fill='%23ff2d7a'/%3E%3Cpath d='M18 42 32 22l14 20-14-6z' fill='%2322e6ff'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="app">
+    <div id="scene" aria-hidden="true"></div>
+
+    <div id="fx-grain"></div>
+    <div id="fx-vignette"></div>
+
+    <!-- ============================ LOADING ============================ -->
+    <section id="loading" class="layer">
+      <div class="loading-wrap">
+        <div class="loading-mark"><span></span><span></span><span></span></div>
+        <p class="eyebrow">HORIZON LIBRE PRESENTS</p>
+        <h1 class="load-title">BAJA<br><em>OPEN WORLD</em></h1>
+        <div class="load-bar"><i id="loadFill"></i></div>
+        <div class="load-row"><span id="loadLabel">Собираем горизонт…</span><span id="loadPct">0%</span></div>
+        <p class="load-tip" id="loadTip">Совет: затяжной дрифт на асфальте даёт больше очков, чем пыль в пустыне.</p>
+      </div>
+      <div class="loading-stripes"></div>
+    </section>
+
+    <!-- ============================= TITLE ============================= -->
+    <section id="title" class="layer screen hidden">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark"><i></i><i></i><i></i></div>
+          <div>
+            <strong>HORIZON <span>LIBRE</span></strong>
+            <small>BAJA · MÉXICO</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="btnTimeTitle" class="chip-btn" title="Время суток"><span class="dot sun"></span><span id="timeLabelTitle">GOLDEN HOUR</span></button>
+          <button id="btnSoundTitle" class="round-btn" aria-label="Звук"><span class="ico-sound">♪</span></button>
+        </div>
+      </header>
+
+      <div class="hero">
+        <p class="eyebrow"><span class="line"></span> Добро пожаловать на фестиваль</p>
+        <h1 class="hero-title"><span class="outline">HORIZON</span><span class="fill">LIBRE</span></h1>
+        <p class="hero-sub">Открытый мир · 10 машин · Закат, который можно догнать</p>
+        <div class="hero-actions">
+          <button id="btnPlay" class="btn btn-primary" aria-label="Play">PLAY</button>
+          <button id="btnGarageTitle" class="btn btn-ghost">ГАРАЖ <span class="k">G</span></button>
+          <button id="btnEventsTitle" class="btn btn-ghost">СОБЫТИЯ</button>
+        </div>
+        <div class="hero-meta">
+          <span><b>10</b> машин в стартовом гараже</span>
+          <span class="sep">/</span>
+          <span><b>5</b> гонок</span>
+          <span class="sep">/</span>
+          <span><b>18 км²</b> открытого мира</span>
+        </div>
+      </div>
+
+      <aside class="car-card" id="titleCarCard">
+        <div class="car-card-top">
+          <span class="class-badge" id="titleClass">A 812</span>
+          <span class="car-tag" id="titleTag">Balanced sport</span>
+        </div>
+        <h2 id="titleCarName">Brisa GT</h2>
+        <p class="car-year" id="titleCarYear">2024 · AWD</p>
+        <div class="stat-list" id="titleStats"></div>
+        <div class="swatches" id="titleSwatches"></div>
+        <button class="text-btn" id="btnCycleCar">СМЕНИТЬ МАШИНУ <span>→</span></button>
+      </aside>
+
+      <footer class="title-foot">
+        <div class="controls-line">
+          <span><kbd>W</kbd><kbd>S</kbd> газ / тормоз</span>
+          <span><kbd>A</kbd><kbd>D</kbd> руль</span>
+          <span><kbd>SPACE</kbd> ручник</span>
+          <span><kbd>SHIFT</kbd> нитро</span>
+          <span><kbd>C</kbd> камера</span>
+        </div>
+        <div class="credit-line">НИЗКОПОЛИГОНАЛЬНЫЙ ФЕСТИВАЛЬ · v1.0 · ВДОХНОВЛЕНО FORZA HORIZON</div>
+      </footer>
+    </section>
+
+    <!-- ============================== HUD ============================== -->
+    <section id="hud" class="layer hidden">
+      <div class="hud-top-left">
+        <div class="event-chip panel" id="eventChip">
+          <span class="event-icon">◆</span>
+          <div><b id="hudEventName">СВОБОДНАЯ ЕЗДА</b><small id="hudEventSub">BAJA · МЕКСИКА</small></div>
+        </div>
+        <div class="race-panel panel hidden" id="racePanel">
+          <div class="race-row"><span id="raceName">Festival Circuit</span><b id="raceTime">00:00.000</b></div>
+          <div class="race-row small"><span id="raceLap">КРУГ 1/2</span><span id="raceCp">КП 0/6</span></div>
+          <div class="race-progress"><i id="raceProgress"></i></div>
+        </div>
+      </div>
+
+      <div class="hud-top-right">
+        <div class="minimap panel">
+          <div class="map-head"><span>BAJA</span><span id="compass">N</span></div>
+          <canvas id="minimap" width="220" height="220"></canvas>
+          <div class="map-north">N</div>
+        </div>
+        <div class="wallet panel">
+          <div><span class="coin">¢</span><b id="credits">50 000</b></div>
+          <div class="wallet-sub"><span id="skillTotal">0</span> SKILL</div>
+        </div>
+      </div>
+
+      <div class="checkpoint-arrow hidden" id="checkpointArrow">
+        <span class="cp-arrow-icon">▲</span>
+        <div><b id="cpDistance">0 м</b><small>СЛЕДУЮЩАЯ ТОЧКА</small></div>
+      </div>
+
+      <div class="hud-bottom-left">
+        <div class="car-id">
+          <span id="hudCarClass" class="class-badge small-badge">A 812</span>
+          <div><b id="hudCarName">Brisa GT</b><small id="hudSurface">АСФАЛЬТ · AWD</small></div>
+        </div>
+        <div class="hint-line" id="hintLine"><kbd>G</kbd> гараж <kbd>M</kbd> карта <kbd>ESC</kbd> пауза</div>
+      </div>
+
+      <div class="hud-bottom-right">
+        <div class="speed-cluster">
+          <div class="drift-badge hidden" id="driftBadge"><span>DRIFT</span><b id="driftPoints">0</b></div>
+          <div class="speed-main">
+            <div class="speed-number" id="speedNumber">0</div>
+            <div class="speed-unit"><span>КМ/Ч</span><small id="mphNumber">0 MPH</small></div>
+          </div>
+          <div class="gear-row">
+            <div class="gear-box"><b id="gearNumber">1</b><span>ПЕРЕДАЧА</span></div>
+            <div class="rpm-wrap">
+              <div class="rpm-bar" id="rpmBar"></div>
+              <div class="nitro-row"><span>НИТРО</span><div class="nitro-bar"><i id="nitroFill"></i></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="center-feed">
+        <div id="announce" class="announce hidden"><small id="announceSub"></small><b id="announceText"></b></div>
+        <div id="countdown" class="countdown hidden">3</div>
+        <div id="toast" class="toast hidden"><b id="toastText"></b><span id="toastSub"></span></div>
+        <div id="skillPopup" class="skill-popup hidden"><small>SKILL CHAIN</small><b id="skillPopupText">DRIFT +124</b><span id="skillMulti">x1.0</span></div>
+        <div id="wrongWay" class="wrong-way hidden">НЕ ТУДА</div>
+      </div>
+
+      <div class="hud-top-center-only" id="photoHint"></div>
+
+      <!-- mobile / touch -->
+      <div id="touchControls" class="touch-controls hidden">
+        <div class="touch-steer">
+          <button class="touch-btn steer" data-touch="left" aria-label="Влево">◀</button>
+          <button class="touch-btn steer" data-touch="right" aria-label="Вправо">▶</button>
+        </div>
+        <div class="touch-pedals">
+          <button class="touch-btn tiny" data-touch="handbrake" aria-label="Ручник">HB</button>
+          <button class="touch-btn tiny nitro" data-touch="boost" aria-label="Нитро">N₂O</button>
+          <button class="touch-btn brake" data-touch="brake" aria-label="Тормоз">▼</button>
+          <button class="touch-btn gas" data-touch="gas" aria-label="Газ">▲</button>
+        </div>
+      </div>
+      <button id="btnPauseMobile" class="mobile-pause hidden" aria-label="Пауза">Ⅱ</button>
+    </section>
+
+    <!-- ============================ GARAGE ============================ -->
+    <section id="garage" class="layer screen hidden">
+      <header class="modal-head">
+        <div>
+          <p class="eyebrow">FESTIVAL GARAGE</p>
+          <h2>ГАРАЖ <span class="muted">/ 10 МАШИН</span></h2>
+        </div>
+        <button id="btnGarageClose" class="round-btn" aria-label="Закрыть">✕</button>
+      </header>
+      <div class="garage-layout">
+        <aside class="garage-list panel">
+          <div class="garage-list-head"><span>СТАРТОВЫЙ ГАРАЖ</span><small>ВСЕ МАШИНЫ ОТКРЫТЫ</small></div>
+          <div id="carList" class="car-list"></div>
+        </aside>
+        <div class="garage-center">
+          <div class="garage-caption"><span id="garageIndex">01</span><small>ПОВЕРНИТЕ МАШИНУ МЫШЬЮ</small></div>
+        </div>
+        <aside class="garage-detail panel">
+          <div class="detail-top">
+            <span class="class-badge" id="garageClass">A 812</span>
+            <span class="car-tag" id="garageTag">Balanced sport</span>
+          </div>
+          <h2 id="garageName">Brisa GT</h2>
+          <p id="garageMeta">2024 · AWD · 420 HP</p>
+          <div class="stat-list large" id="garageStats"></div>
+          <div class="paint-block">
+            <span>ЦВЕТ КУЗОВА</span>
+            <div class="swatches" id="garageSwatches"></div>
+          </div>
+          <div class="spec-grid">
+            <div><small>МОЩНОСТЬ</small><b id="specPower">420 HP</b></div>
+            <div><small>МАССА</small><b id="specWeight">1445 KG</b></div>
+            <div><small>МАКС.</small><b id="specSpeed">291 КМ/Ч</b></div>
+            <div><small>ПРИВОД</small><b id="specDrive">AWD</b></div>
+          </div>
+          <div class="garage-actions">
+            <button id="btnGarageDrive" class="btn btn-primary">ПОЕХАЛИ</button>
+            <button id="btnGarageBack" class="btn btn-ghost">НАЗАД</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================= MAP ============================== -->
+    <section id="mapscreen" class="layer screen hidden">
+      <header class="modal-head">
+        <div><p class="eyebrow">BAJA · MÉXICO</p><h2>КАРТА МИРА</h2></div>
+        <button id="btnMapClose" class="round-btn" aria-label="Закрыть">✕</button>
+      </header>
+      <div class="map-layout">
+        <div class="map-frame panel">
+          <div class="map-canvas-wrap">
+            <canvas id="bigMap" width="900" height="900"></canvas>
+            <div id="bigMapMarkers"></div>
+          </div>
+          <div class="map-legend"><span><i class="lg player"></i>Вы</span><span><i class="lg race"></i>Гонки</span><span><i class="lg fest"></i>Фестиваль</span><span><i class="lg town"></i>Город</span></div>
+        </div>
+        <aside class="map-side panel">
+          <div class="garage-list-head"><span>СОБЫТИЯ РЯДОМ</span><small>ВЫБЕРИТЕ И СТАРТУЙТЕ</small></div>
+          <div id="eventList" class="event-list"></div>
+          <div class="map-side-foot">
+            <button id="btnMapGarage" class="btn btn-ghost small">ГАРАЖ</button>
+            <button id="btnMapClose2" class="btn btn-primary small">ПРОДОЛЖИТЬ</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================ PAUSE ============================= -->
+    <section id="pause" class="layer modal-layer hidden">
+      <div class="pause-panel panel">
+        <div class="pause-head">
+          <p class="eyebrow">HORIZON LIBRE</p>
+          <h2>ПАУЗА</h2>
+          <p id="pauseLocation">BAJA · FESTIVAL GROUNDS</p>
+        </div>
+        <div class="pause-actions">
+          <button id="btnResume" class="btn btn-primary">ПРОДОЛЖИТЬ</button>
+          <button id="btnPauseGarage" class="btn btn-ghost">ГАРАЖ</button>
+          <button id="btnPauseMap" class="btn btn-ghost">КАРТА И ГОНКИ</button>
+          <button id="btnReset" class="btn btn-ghost">СБРОСИТЬ МАШИНУ</button>
+        </div>
+        <div class="pause-settings">
+          <div class="setting">
+            <span>ВРЕМЯ СУТОК</span>
+            <div class="time-tabs" id="timeTabs">
+              <button data-time="golden">ЗАКАТ</button>
+              <button data-time="day">ДЕНЬ</button>
+              <button data-time="dusk">СУМЕРКИ</button>
+              <button data-time="night">НОЧЬ</button>
+            </div>
+          </div>
+          <div class="setting">
+            <span>ЗВУК</span>
+            <button id="btnMutePause" class="toggle-btn">ВКЛ</button>
+          </div>
+        </div>
+        <p class="pause-tip">Совет: на бездорожье ручник и нитро работают хуже. Ищите асфальт для максимальной скорости.</p>
+      </div>
+    </section>
+
+    <!-- ============================ RESULTS =========================== -->
+    <section id="results" class="layer modal-layer hidden">
+      <div class="result-panel panel">
+        <p class="eyebrow">СОБЫТИЕ ЗАВЕРШЕНО</p>
+        <div class="medal" id="medalIcon">🥇</div>
+        <h2 id="resultTitle">Festival Circuit</h2>
+        <div class="result-time" id="resultTime">02:14.382</div>
+        <div class="result-stats">
+          <div><small>ЗОЛОТО</small><b id="resultGold">02:20.000</b></div>
+          <div><small>ВАШЕ ВРЕМЯ</small><b id="resultYour">02:14.382</b></div>
+          <div><small>НАГРАДА</small><b id="resultReward">+8 000 ¢</b></div>
+        </div>
+        <div class="result-actions">
+          <button id="btnRetry" class="btn btn-ghost">ЕЩЁ РАЗ</button>
+          <button id="btnFreeRoam" class="btn btn-primary">В СВОБОДНУЮ ЕЗДУ</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="rotateHint" class="rotate-hint hidden">Поверните телефон горизонтально для полного обзора</div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
