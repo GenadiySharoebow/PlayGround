@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0b0d12" />
+    <title>APEX HORIZON — открытый мир</title>
+    <meta name="description" content="Низкополигональный фестиваль скорости: десять автомобилей, открытый мир и живая физика." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700;1,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script type="module" crossorigin src="./assets/index-DFRnRXKF.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-YrWZGCo4.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game" aria-label="Открытый мир APEX HORIZON"></canvas>
+      <div class="vignette"></div>
+      <div class="grain"></div>
+      <div id="speed-lines"></div>
+
+      <section id="loading" class="screen loading-screen">
+        <div class="loading-mark">A<span>▲</span></div>
+        <div class="loading-copy">
+          <span class="eyebrow">APEX MOTORSPORT PRESENTS</span>
+          <h1>HORIZON</h1>
+          <div class="loading-bar"><i id="loading-progress"></i></div>
+          <div class="loading-meta"><span id="loading-label">Строим открытый мир</span><span id="loading-percent">0%</span></div>
+        </div>
+      </section>
+
+      <section id="menu" class="screen menu-screen is-hidden">
+        <header class="menu-header">
+          <div class="brand">
+            <div class="brand-mark">A<span>▲</span></div>
+            <div>
+              <strong>APEX</strong>
+              <small>HORIZON FESTIVAL</small>
+            </div>
+          </div>
+          <div class="menu-meta">
+            <div class="live-pill"><i></i> ОТКРЫТЫЙ МИР</div>
+            <div class="season">СЕЗОН 01 <b>·</b> ЗОЛОТОЙ ЧАС</div>
+          </div>
+        </header>
+
+        <div class="hero-copy">
+          <span class="eyebrow">ДОБРО ПОЖАЛОВАТЬ НА ФЕСТИВАЛЬ</span>
+          <h1>ЖИВИ<br /><em>НА ПОЛНОЙ</em></h1>
+          <p>Четыре километра свободы. Десять машин. Одна дорога — твоя.</p>
+          <div class="hero-tags"><span>4 × 4 КМ</span><span>10 АВТО</span><span>ЖИВАЯ ФИЗИКА</span></div>
+        </div>
+
+        <aside class="car-panel">
+          <div class="car-panel-top">
+            <div>
+              <span class="eyebrow">ТВОЙ АВТОМОБИЛЬ</span>
+              <h2 id="car-name">FALCON GT-R</h2>
+              <p id="car-brand">VORTEX MOTORS · AWD</p>
+            </div>
+            <div class="class-badge" id="car-class">A</div>
+          </div>
+
+          <div class="stat-list" id="car-stats">
+            <div class="stat"><span>СКОРОСТЬ</span><i><b style="width:78%"></b></i><em>78</em></div>
+            <div class="stat"><span>РАЗГОН</span><i><b style="width:72%"></b></i><em>72</em></div>
+            <div class="stat"><span>УПРАВЛЕНИЕ</span><i><b style="width:70%"></b></i><em>70</em></div>
+            <div class="stat"><span>СЦЕПЛЕНИЕ</span><i><b style="width:75%"></b></i><em>75</em></div>
+          </div>
+
+          <div class="car-index"><span id="car-index">01</span><small>/ 10</small></div>
+
+          <div class="car-strip" id="car-strip" aria-label="Выбор автомобиля"></div>
+
+          <div class="panel-actions">
+            <button id="start-button" class="cta" type="button">
+              <span>НАЧАТЬ ИГРУ</span>
+              <b>→</b>
+            </button>
+            <button id="garage-button" class="ghost-button" type="button">ГАРАЖ</button>
+          </div>
+        </aside>
+
+        <div class="menu-footer">
+          <span><kbd>WASD</kbd> / <kbd>СТРЕЛКИ</kbd> — езда</span>
+          <span><kbd>SPACE</kbd> — ручник</span>
+          <span><kbd>C</kbd> — камера</span>
+          <span><kbd>ESC</kbd> — пауза</span>
+        </div>
+
+        <div class="sound-toggle" id="sound-toggle" role="button" tabindex="0" aria-label="Звук">
+          <span class="sound-icon">◖))</span><span id="sound-label">ЗВУК ВКЛ</span>
+        </div>
+      </section>
+
+      <section id="hud" class="screen hud is-hidden">
+        <div class="hud-top-left">
+          <div class="event-chip" id="event-chip">
+            <i class="pulse-dot"></i>
+            <div><small id="event-type">СВОБОДНАЯ ЕЗДА</small><strong id="event-name">ФЕСТИВАЛЬ HORIZON</strong></div>
+          </div>
+          <div class="xp-line"><span id="level">УР. 01</span><i><b id="xp-fill" style="width:22%"></b></i><em id="xp-value">220 / 1000</em></div>
+        </div>
+
+        <div class="hud-top-center">
+          <div class="race-clock is-hidden" id="race-clock">
+            <span id="race-lap">КРУГ 1 / 2</span>
+            <strong id="race-time">00:00.00</strong>
+            <small id="race-pos">P1 / 4</small>
+          </div>
+          <div class="checkpoint-hint is-hidden" id="checkpoint-hint">СЛЕДУЮЩИЙ ЧЕКПОИНТ <b>320 М</b></div>
+          <div class="countdown is-hidden" id="countdown">3</div>
+        </div>
+
+        <div class="interact-prompt is-hidden" id="interact-prompt"><kbd>E</kbd> НАЧАТЬ СОБЫТИЕ</div>
+
+        <div class="hud-top-right">
+          <button class="icon-button" id="events-button" type="button" aria-label="События"><span>◆</span><small>СОБЫТИЯ</small></button>
+          <button class="icon-button" id="map-button" type="button" aria-label="Карта"><span>▱</span><small>КАРТА</small></button>
+          <button class="icon-button" id="pause-button" type="button" aria-label="Пауза"><span>Ⅱ</span><small>ПАУЗА</small></button>
+        </div>
+
+        <div class="skill-chain is-hidden" id="skill-chain">
+          <span>SKILL CHAIN</span><strong id="skill-points">0</strong><small id="skill-label">DRIFT</small>
+        </div>
+
+        <div class="hud-bottom-left">
+          <div class="speedo">
+            <div class="speedo-arc"><svg viewBox="0 0 120 120"><circle class="arc-bg" cx="60" cy="60" r="50"></circle><circle id="speed-arc" class="arc-fill" cx="60" cy="60" r="50"></circle></svg></div>
+            <div class="speed-value"><strong id="speed">0</strong><span>КМ/Ч</span></div>
+            <div class="gear"><small>ПЕРЕДАЧА</small><b id="gear">N</b></div>
+          </div>
+          <div class="car-hud">
+            <span id="hud-car-class" class="mini-class">A</span>
+            <div><strong id="hud-car-name">FALCON GT-R</strong><small id="hud-car-brand">VORTEX · AWD</small></div>
+          </div>
+        </div>
+
+        <div class="hud-bottom-right">
+          <canvas id="minimap" width="320" height="320"></canvas>
+          <div class="map-ring"></div>
+          <div class="map-coords" id="map-coords">N 00° 00′ · E 00° 00′</div>
+        </div>
+
+        <div class="toast-wrap" id="toast-wrap"></div>
+
+        <div class="mobile-controls" id="mobile-controls">
+          <div class="touch-steer">
+            <button data-control="left" aria-label="Влево">‹</button>
+            <button data-control="right" aria-label="Вправо">›</button>
+          </div>
+          <div class="touch-pedals">
+            <button class="touch-brake" data-control="brake" aria-label="Тормоз">ТОРМОЗ</button>
+            <button class="touch-gas" data-control="gas" aria-label="Газ">ГАЗ</button>
+          </div>
+          <button class="touch-handbrake" data-control="handbrake" aria-label="Ручник">DRIFT</button>
+        </div>
+      </section>
+
+      <section id="events-panel" class="overlay-panel is-hidden">
+        <div class="panel-card events-card">
+          <button class="close-button" data-close="events-panel">×</button>
+          <span class="eyebrow">HORIZON EVENTS</span>
+          <h2>ВЫБЕРИ СОБЫТИЕ</h2>
+          <div id="event-list" class="event-list"></div>
+        </div>
+      </section>
+
+      <section id="map-panel" class="overlay-panel is-hidden">
+        <div class="panel-card map-card">
+          <button class="close-button" data-close="map-panel">×</button>
+          <div class="map-heading"><span class="eyebrow">НАВИГАЦИЯ</span><h2>КАРТА МИРА</h2></div>
+          <canvas id="world-map" width="1000" height="1000"></canvas>
+          <div class="map-legend">
+            <span><i class="dot you"></i> ВЫ</span>
+            <span><i class="dot event"></i> СОБЫТИЯ</span>
+            <span><i class="dot board"></i> HORIZON BOARDS</span>
+            <span><i class="dot city"></i> ГОРОД</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="pause-panel" class="overlay-panel is-hidden">
+        <div class="panel-card pause-card">
+          <span class="eyebrow">ПАУЗА</span>
+          <h2>ПЕРЕДОХНИ</h2>
+          <p class="pause-sub">Мир никуда не денется.</p>
+          <div class="pause-actions">
+            <button id="resume-button" class="cta" type="button"><span>ПРОДОЛЖИТЬ</span><b>→</b></button>
+            <button id="garage-pause-button" class="ghost-button" type="button">СМЕНИТЬ АВТОМОБИЛЬ</button>
+            <button id="restart-button" class="ghost-button" type="button">СБРОСИТЬ ПОЗИЦИЮ</button>
+          </div>
+          <div class="settings">
+            <label>ВРЕМЯ СУТОК <input id="time-slider" type="range" min="5" max="23" step="0.25" value="17.35" /><b id="time-label">17:21</b></label>
+            <label>КАЧЕСТВО <select id="quality-select"><option value="high">ВЫСОКОЕ</option><option value="medium">СРЕДНЕЕ</option><option value="low">НИЗКОЕ</option></select></label>
+            <label>ЗВУК <input id="volume-slider" type="range" min="0" max="1" step="0.05" value="0.65" /><b id="volume-label">65%</b></label>
+          </div>
+          <div class="pause-controls"><kbd>WASD</kbd> езда <kbd>SPACE</kbd> дрифт <kbd>C</kbd> камера <kbd>R</kbd> сброс <kbd>M</kbd> карта</div>
+        </div>
+      </section>
+
+      <section id="results-panel" class="overlay-panel is-hidden">
+        <div class="panel-card results-card">
+          <span class="eyebrow">ФИНИШ</span>
+          <h2 id="result-title">ОТЛИЧНЫЙ ЗАЕЗД</h2>
+          <div class="result-time"><strong id="result-time">01:24.32</strong><span>ВРЕМЯ</span></div>
+          <div id="result-standings" class="standings"></div>
+          <div class="result-rewards"><span>+<b id="result-xp">1500</b> XP</span><span>+<b id="result-credits">12 000</b> CR</span></div>
+          <div class="panel-actions">
+            <button id="result-close" class="cta" type="button"><span>ВЕРНУТЬСЯ В МИР</span><b>→</b></button>
+            <button id="result-retry" class="ghost-button" type="button">ЕЩЁ РАЗ</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="garage-panel" class="overlay-panel is-hidden">
+        <div class="panel-card garage-card">
+          <button class="close-button" data-close="garage-panel">×</button>
+          <span class="eyebrow">APEX MOTORSPORT</span>
+          <h2>ГАРАЖ</h2>
+          <div class="garage-grid" id="garage-grid"></div>
+          <div class="garage-footer"><span>Выбери автомобиль для свободной езды и событий.</span><button id="garage-confirm" class="cta" type="button"><span>ПОДТВЕРДИТЬ</span><b>→</b></button></div>
+        </div>
+      </section>
+
+      <div id="fade" class="fade-layer"></div>
+    </div>
+  </body>
+</html>
