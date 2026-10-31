@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#111a2c">
+  <meta name="description" content="Ridge Rush 3D — a low-poly hill racing game. Climb, fly, flip and collect coins across an endless ridgeline.">
+  <title>Ridge Rush 3D — Low-Poly Hill Racing</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111a2c'/%3E%3Cpath d='M4 46 20 22l12 14 9-11 19 21z' fill='%23ff6b35'/%3E%3Ccircle cx='44' cy='42' r='5' fill='%23ffe8c8'/%3E%3Ccircle cx='22' cy='42' r='5' fill='%23ffe8c8'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/bungee-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="menu-open">
+  <div id="scene" aria-hidden="true"></div>
+
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="flash" aria-hidden="true"></div>
+
+  <section id="hud" aria-label="Race info">
+    <div class="hud-top">
+      <div class="hud-left">
+        <div class="hud-label">DISTANCE</div>
+        <div class="distance"><span id="distance-value">0</span><span class="unit">m</span></div>
+        <div class="best-line">BEST <span id="best-value">0</span> m</div>
+      </div>
+      <div class="hud-right">
+        <div class="coin-pill" aria-label="Coins collected">
+          <span class="coin-icon" aria-hidden="true"></span>
+          <span id="coin-value">0</span>
+        </div>
+        <div class="fuel-wrap">
+          <div class="fuel-label"><span class="fuel-drop" aria-hidden="true"></span><span>FUEL</span></div>
+          <div class="fuel-bar"><div id="fuel-fill" class="fuel-fill"></div><div class="fuel-gloss"></div></div>
+        </div>
+        <button id="mute-btn" class="icon-btn" type="button" aria-label="Mute sound" title="Mute sound">
+          <span class="sound-on" aria-hidden="true">♪</span>
+          <span class="sound-off" aria-hidden="true">✕</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="speedo" class="speedo">
+      <span id="speed-value">0</span><span class="speed-unit">km/h</span>
+    </div>
+
+    <div id="combo" class="combo" role="status" aria-live="polite"></div>
+    <div id="hint" class="hint"></div>
+    <div id="touch-controls" class="touch-controls" aria-label="Driving controls">
+      <button id="brake-btn" class="pedal pedal-brake" type="button" aria-label="Brake and reverse">
+        <span class="pedal-icon" aria-hidden="true">◀</span>
+        <span class="pedal-text">BRAKE</span>
+      </button>
+      <button id="gas-btn" class="pedal pedal-gas" type="button" aria-label="Accelerate">
+        <span class="pedal-icon" aria-hidden="true">▶</span>
+        <span class="pedal-text">GAS</span>
+      </button>
+    </div>
+  </section>
+
+  <section id="menu" class="overlay show" aria-label="Main menu">
+    <div class="menu-shade"></div>
+    <div class="menu-content">
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" width="44" height="44"><path d="M2 33 13 13l9 11 6-8 14 17z" fill="#ff6b35"/><circle cx="30" cy="30" r="4.6" fill="#ffe8c8"/><circle cx="14" cy="30" r="4.6" fill="#ffe8c8"/></svg>
+        </div>
+        <span class="brand-word">RIDGE RUSH</span>
+        <span class="brand-badge">3D</span>
+      </div>
+
+      <h1 class="title">RIDE THE<br><span class="title-accent">RIDGELINE</span></h1>
+      <p class="tagline">Low-poly hills · big air · endless climbs</p>
+
+      <div class="menu-actions">
+        <button id="play-btn" class="btn btn-primary" type="button"><span>PLAY</span></button>
+        <button id="garage-btn" class="btn btn-ghost" type="button"><span>GARAGE</span></button>
+        <button id="menu-mute" class="btn btn-round" type="button" aria-label="Mute sound" title="Mute sound">
+          <span class="sound-on" aria-hidden="true">♪</span><span class="sound-off" aria-hidden="true">✕</span>
+        </button>
+      </div>
+
+      <div class="menu-stats">
+        <div class="stat">
+          <span class="stat-label">PERSONAL BEST</span>
+          <span class="stat-value"><span id="menu-best">0</span><small>m</small></span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat">
+          <span class="stat-label">COINS</span>
+          <span class="stat-value"><span class="coin-icon small" aria-hidden="true"></span><span id="menu-coins">0</span></span>
+        </div>
+      </div>
+
+      <div class="menu-tip">
+        <span class="key">→</span><span class="key">D</span> GAS
+        <span class="dot">·</span>
+        <span class="key">←</span><span class="key">A</span> BRAKE
+        <span class="dot">·</span>
+        <span class="key wide">R</span> RESTART
+      </div>
+    </div>
+    <div class="menu-credit">ORIGINAL LOW-POLY HILL RACER</div>
+  </section>
+
+  <section id="garage" class="overlay" aria-label="Garage">
+    <div class="garage-shade"></div>
+    <div class="garage-panel">
+      <div class="garage-head">
+        <div>
+          <div class="eyebrow">PICK YOUR RIDE</div>
+          <h2 class="garage-title">GARAGE</h2>
+        </div>
+        <div class="garage-head-right">
+          <div class="coin-pill large"><span class="coin-icon"></span><span id="garage-coins">0</span></div>
+          <button id="garage-close" class="icon-btn close-btn" type="button" aria-label="Close garage">✕</button>
+        </div>
+      </div>
+      <div id="garage-list" class="garage-list"></div>
+      <p class="garage-note">Coins are shared between runs. Unlock a rig, then send it.</p>
+    </div>
+  </section>
+
+  <section id="gameover" class="overlay" aria-label="Run results">
+    <div class="result-shade"></div>
+    <div class="result-card">
+      <div id="result-kicker" class="eyebrow">RUN OVER</div>
+      <h2 id="result-title" class="result-title">WIPEOUT</h2>
+      <div class="result-score">
+        <span id="result-distance">0</span><small>m</small>
+      </div>
+      <div class="result-grid">
+        <div class="result-item"><span class="stat-label">COINS EARNED</span><span class="result-value">+<span id="result-coins">0</span></span></div>
+        <div class="result-item"><span class="stat-label">BEST DISTANCE</span><span class="result-value"><span id="result-best">0</span> m</span></div>
+      </div>
+      <div id="new-best" class="new-best">NEW PERSONAL BEST!</div>
+      <div class="result-actions">
+        <button id="retry-btn" class="btn btn-primary" type="button"><span>RETRY</span></button>
+        <button id="result-menu-btn" class="btn btn-ghost" type="button"><span>MENU</span></button>
+      </div>
+      <p class="result-tip">Tip: tap the brake in the air to rotate forward. Gas rotates you back.</p>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
